@@ -1,0 +1,50 @@
+services:
+  nginx:
+    restart: unless-stopped
+    container_name: rentline_nginx
+    platform: linux/amd64
+    build: config/docker/nginx
+    image: localhost/rentline_nginx
+    ports:
+      - '8080:80'
+    volumes:
+      - './:/var/www/html/:Z'
+      - './config/docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:Z'
+    networks:
+      - rentline_network
+
+  php:
+    restart: unless-stopped
+    container_name: rentline_php
+    platform: linux/amd64
+    build: config/docker/php
+    image: localhost/rentline_php
+    environment:
+      - SERVICE_NAME=php
+    volumes:
+      - './:/var/www/html/:Z'
+      - './config/docker/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini:Z'
+      - './config/docker/php/bashrc:/root/.bashrc:Z'
+    networks:
+      - rentline_network
+
+  database:
+    restart: unless-stopped
+    container_name: rentline_db
+    image: postgres:15
+    platform: linux/amd64
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: rentline_project
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: 12345678
+    volumes:
+      - ./config/docker/database/data:/var/lib/postgresql/data
+    networks:
+      - rentline_network
+
+networks:
+  rentline_network:
+    name: rentline_network
+    driver: bridge

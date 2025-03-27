@@ -1,0 +1,9 @@
+parameters:
+    paths:
+        - src
+    editorUrl: 'phpstorm://open?file=%%file%%&line=%%line%%'
+    level: 8
+    bootstrapFiles:
+        - vendor/autoload.php
+    excludePaths:
+        - vendor
